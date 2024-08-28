@@ -5,9 +5,8 @@ import notesRoutes from "./routes/notes";
 import express, { NextFunction, Request, Response } from "express";
 const app = express(); // app is server
 
-app.use("/api/notes", notesRoutes);
-
 app.use(express.json());
+app.use("/api/notes", notesRoutes);
 
 app.use((req, res, next) => {
   next(Error("Endpoint not found"));

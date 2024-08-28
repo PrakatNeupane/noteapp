@@ -14,8 +14,9 @@ export const getNotes: RequestHandler = async (req, res, next) => {
 export const createNotes: RequestHandler = async (req, res, next) => {
   const title = req.body.title;
   const text = req.body.text;
+
   try {
-    const newNote = NoteModel.create({
+    const newNote = await NoteModel.create({
       title: title,
       text: text,
     }); // create returns a promise by itself and hence .exec() is not needed
