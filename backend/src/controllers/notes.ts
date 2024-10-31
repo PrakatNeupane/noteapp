@@ -57,3 +57,47 @@ export const createNotes: RequestHandler<
     next(error);
   }
 };
+
+interface UpdateNoteParams {
+  noteId: string;
+}
+
+interface UpdateNoteBody {
+  title?: string;
+  text?: string;
+}
+
+export const updateNote: RequestHandler<
+  UpdateNoteParams,
+  unknown,
+  UpdateNoteBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const noteId = req.params.noteId;
+    const newTitle = req.body.title;
+    const newText = req.body.text;
+
+    if (!mongoose.isValidObjectId(noteId)) {
+      throw createHttpError(400, "Invalid note ID");
+    }
+
+    if (!newTitle) {
+      throw createHttpError(404, "Note must have a title");
+    }
+
+    const note = await NoteModel.findById(noteId).exec();
+
+    if (!note) {
+      throw createHttpError(404, "Such a note does not exist");
+    }
+    note.title = newTitle;
+    note.text = newText;
+
+    const updatedNote = await note.save();
+
+    res.status(200).json(updatedNote);
+  } catch (error) {
+    next(error);
+  }
+};
