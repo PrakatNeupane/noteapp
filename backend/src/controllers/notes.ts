@@ -101,3 +101,30 @@ export const updateNote: RequestHandler<
     next(error);
   }
 };
+
+export const deleteNote: RequestHandler<
+  UpdateNoteParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const noteId = req.params.noteId;
+    if (!mongoose.isValidObjectId(noteId)) {
+      throw createHttpError(400, "Invalid note ID");
+    }
+    const note = await NoteModel.findById(noteId).exec();
+    if (!note) {
+      throw createHttpError(404, "Such a note does not exist");
+    }
+    await NoteModel.deleteOne({ _id: noteId });
+
+    res
+      .status(200)
+      .json({
+        message: `The note with noteId ${noteId}, title:${note.title}, text:${note.text} has been deleted.`,
+      });
+  } catch (error) {
+    next(error);
+  }
+};
